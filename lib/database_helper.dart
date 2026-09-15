@@ -7,6 +7,8 @@ class DatabaseHelper {
   //função que cria tabela no BG
   //função assincróna é chamada na hora de execução do app,mas trabalha por debaixo dos panos, deixa o app mais respponsivo
 
+  //Abre (pu cria, se não exite) o arquivo de banco de dados
+
   static Future<Database> abrirBanco() async {
     final caminho = join(
       await getDatabasesPath(),
@@ -28,9 +30,49 @@ class DatabaseHelper {
     );
   }
 
+  //Getter que devolve o banco de dados já aberto, ou abre se ainda não existe
+
   static Future<Database> get database async {
     _db ??=
         await abrirBanco(); //variavel estática na memoria do celular, ele vai verificar se o banco de dados está aberto, verifica na memoria.
     return _db!;
+  }
+
+  // READ: buscar todas as tarefas sçlavas dentro do banco
+
+  static Future<List<Map<String, dynamic>>> buscarTarefas() async {
+    final db = await DatabaseHelper.database;
+    return db.query("tarefas"); // select * from tarefas
+  }
+
+  //CREATE inserir uma njova tarefa no banco de dados
+  static Future<void> inserirTarefa(String titulo) async {
+    final db = await DatabaseHelper.database;
+    await db.insert("tarefas", {
+      'titulo': titulo,
+      'situacao': 0,
+    });
+  }
+
+  //UPDATE atualização da situação da tarefa
+  static Future<void> atualizarTarefa(int id, int situacao) async {
+    final db = await DatabaseHelper
+        .database; //clicar na lâmpada e add async para o erro sumir
+    await db.update(
+      'tarefas',
+      {'situacao': situacao},
+      where: 'id = ?', // usamos o parâmetro ? para evitar sql injector
+      whereArgs: [id],
+    );
+  }
+
+  //DELETE deletar uma tarefa do banco de dados
+  static Future<void> deletarTarefa(int id) async {
+    final db = await DatabaseHelper.database;
+    await db.delete(
+      'tarefas',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }
