@@ -38,7 +38,7 @@ class DatabaseHelper {
     return _db!;
   }
 
-  // READ: buscar todas as tarefas sçlavas dentro do banco
+  // READ: buscar todas as tarefas salvas dentro do banco
 
   static Future<List<Map<String, dynamic>>> buscarTarefas() async {
     final db = await DatabaseHelper.database;
