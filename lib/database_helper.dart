@@ -40,8 +40,31 @@ class DatabaseHelper {
 
   // READ: buscar todas as tarefas salvas dentro do banco
 
-  static Future<List<Map<String, dynamic>>> buscarTarefas() async {
+  static Future<List<Map<String, dynamic>>> buscarTarefas({
+    String? filtro,
+  }) async {
     final db = await DatabaseHelper.database;
+
+    if (filtro == "pendentes") {
+      return db.query(
+        "tarefas",
+        where: "situacao = ?",
+        whereArgs: [
+          0,
+        ], //se a tarefa for igual a pendentes e está com a situação 0 ela é retornada
+      );
+    }
+
+    if (filtro == "concluidas") {
+      return db.query(
+        "tarefas",
+        where: "situacao = ?",
+        whereArgs: [
+          1,
+        ], //se a tarefa for igual a concluidas e está com a situação 1 ela é retornada
+      );
+    }
+
     return db.query("tarefas"); // select * from tarefas
   }
 
