@@ -17,15 +17,23 @@ class DatabaseHelper {
 
     return openDatabase(
       caminho,
-      version: 1, //mudando a versão o BD é reestruturado
+      version: 2, //mudando a versão o BD é reestruturado
       onCreate: (db, versao) {
         return db.execute(
           'CREATE TABLE tarefas (' //colocar aspas simples dentro dos parênteses
           'id INTEGER PRIMARY KEY AUTOINCREMENT,'
           'titulo TEXT,'
-          'situacao INTEGER' // 0 para false e 1 ppara true
+          'situacao INTEGER,' // 0 para false e 1 ppara true
+          "categoria TEXT"
           ')',
         );
+      },
+      onUpgrade: (db, versaoAntiga, versaoNova) {
+        if (versaoAntiga <
+            versaoNova) // aqui no lugar da versãoNova podemos substituir pelo numero da versão
+        {
+          db.execute("ALTER TABLE tarefas ADD COLUMN categoria TEXT");
+        }
       },
     );
   }
@@ -69,11 +77,12 @@ class DatabaseHelper {
   }
 
   //CREATE inserir uma njova tarefa no banco de dados
-  static Future<void> inserirTarefa(String titulo) async {
+  static Future<void> inserirTarefa(String titulo, String categoria) async {
     final db = await DatabaseHelper.database;
     await db.insert("tarefas", {
       'titulo': titulo,
       'situacao': 0,
+      'categoria': categoria,
     });
   }
 
